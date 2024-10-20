@@ -39,7 +39,7 @@ namespace NotaDog.Windows
             lstDocuments.MouseDoubleClick += LstDocuments_MouseDoubleClick;
         }
 
-        private void EnsureDocumentsFolderExists()
+        private static void EnsureDocumentsFolderExists()
         {
             // Get the documents folder path
             string documentsFolder = DocumentService.GetDefaultDocumentsFolder();
@@ -65,14 +65,14 @@ namespace NotaDog.Windows
             Properties.Settings.Default.Save();
 
             // Retour à la fenêtre de connexion
-            MainWindow mainWindow = new MainWindow();
+            MainWindow mainWindow = new();
             SwitchToWindow(mainWindow);
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             // Ouvrir la fenêtre de paramètres
-            SettingsWindow settingsWindow = new SettingsWindow();
+            SettingsWindow settingsWindow = new();
             SwitchToWindow(settingsWindow);
         }
 
@@ -84,11 +84,11 @@ namespace NotaDog.Windows
 
         private void LoadDocumentTypes()
         {
-            List<string> documentTypes = new List<string>
-            {
+            List<string> documentTypes =
+            [
                 "Promesse de Vente"
                 // Vous pouvez ajouter d'autres types plus tard
-            };
+            ];
             cmbDocumentTypes.ItemsSource = documentTypes;
             cmbDocumentTypes.SelectedIndex = 0;
         }
@@ -102,7 +102,7 @@ namespace NotaDog.Windows
                 // Ouvrir la fenêtre de configuration en passant le type de document
                 if (selectedType != null)
                 {
-                    ConfigurationWindow configWindow = new ConfigurationWindow(selectedType);
+                    ConfigurationWindow configWindow = new(selectedType);
                     SwitchToWindow(configWindow);
                 }
             }
@@ -116,7 +116,7 @@ namespace NotaDog.Windows
         {
             if (lstDocuments.SelectedItem != null)
             {
-                var documentInfo = lstDocuments.SelectedItem as DocumentInfo;
+                var documentInfo = (DocumentInfo)lstDocuments.SelectedItem;
                 if (documentInfo != null)
                 {
                     OpenDocument(documentInfo);
@@ -134,8 +134,10 @@ namespace NotaDog.Windows
             else
             {
                 // Show the confirmation dialog
-                ConfirmationDialog dialog = new ConfirmationDialog($"Do you want to open the document: {documentInfo.FileName}?");
-                dialog.Owner = this; // Optional, sets the owner window
+                ConfirmationDialog dialog = new($"Do you want to open the document: {documentInfo.FileName}?")
+                {
+                    Owner = this // Optional, sets the owner window
+                };
                 bool? dialogResult = dialog.ShowDialog();
 
                 if (dialogResult == true && dialog.Result)
@@ -156,7 +158,7 @@ namespace NotaDog.Windows
             }
         }
 
-        private void OpenDocumentFile(string filePath)
+        private static void OpenDocumentFile(string filePath)
         {
             try
             {

@@ -142,5 +142,101 @@ namespace NotaDog.Properties {
                 this["AlwaysOpenWithoutPrompt"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryFirstName {
+            get {
+                return ((string)(this["NotaryFirstName"]));
+            }
+            set {
+                this["NotaryFirstName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryLastName {
+            get {
+                return ((string)(this["NotaryLastName"]));
+            }
+            set {
+                this["NotaryLastName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryCity {
+            get {
+                return ((string)(this["NotaryCity"]));
+            }
+            set {
+                this["NotaryCity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryCountry {
+            get {
+                return ((string)(this["NotaryCountry"]));
+            }
+            set {
+                this["NotaryCountry"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryOfficeName {
+            get {
+                return ((string)(this["NotaryOfficeName"]));
+            }
+            set {
+                this["NotaryOfficeName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryOfficeAddress {
+            get {
+                return ((string)(this["NotaryOfficeAddress"]));
+            }
+            set {
+                this["NotaryOfficeAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryAuthorityCity {
+            get {
+                return ((string)(this["NotaryAuthorityCity"]));
+            }
+            set {
+                this["NotaryAuthorityCity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NotaryAuthorityCountry {
+            get {
+                return ((string)(this["NotaryAuthorityCountry"]));
+            }
+            set {
+                this["NotaryAuthorityCountry"] = value;
+            }
+        }
     }
 }

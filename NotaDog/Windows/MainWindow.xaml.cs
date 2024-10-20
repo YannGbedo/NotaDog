@@ -18,7 +18,7 @@ namespace NotaDog.Windows
             if (Properties.Settings.Default.IsLoggedIn)
             {
                 // Ouvrir directement la fenêtre du menu
-                MenuWindow menuWindow = new MenuWindow();
+                MenuWindow menuWindow = new();
                 SwitchToWindow(menuWindow);
             }
             else
@@ -54,7 +54,7 @@ namespace NotaDog.Windows
         private void LoginControl_UserLoggedIn(object sender, RoutedEventArgs e)
         {
             // Après la connexion, ouvrir la fenêtre du menu
-            MenuWindow menuWindow = new MenuWindow();
+            MenuWindow menuWindow = new();
             SwitchToWindow(menuWindow);
         }
 

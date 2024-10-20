@@ -49,17 +49,15 @@ namespace NotaDog.Services
         {
             try
             {
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
+                using WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false);
+                var customProps = wordDoc.CustomFilePropertiesPart;
+                if (customProps != null)
                 {
-                    var customProps = wordDoc.CustomFilePropertiesPart;
-                    if (customProps != null)
+                    var props = customProps.Properties;
+                    var generatedByProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == "GeneratedByNotaDog");
+                    if (generatedByProp != null && generatedByProp.VTLPWSTR != null && generatedByProp.VTLPWSTR.Text == "True")
                     {
-                        var props = customProps.Properties;
-                        var generatedByProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == "GeneratedByNotaDog");
-                        if (generatedByProp != null && generatedByProp.VTLPWSTR != null && generatedByProp.VTLPWSTR.Text == "True")
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -74,33 +72,31 @@ namespace NotaDog.Services
         {
             try
             {
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
+                using WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false);
+                var customProps = wordDoc.CustomFilePropertiesPart;
+                if (customProps != null)
                 {
-                    var customProps = wordDoc.CustomFilePropertiesPart;
-                    if (customProps != null)
+                    var props = customProps.Properties;
+                    var generatedByProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == "GeneratedByNotaDog");
+                    if (generatedByProp != null && generatedByProp.VTLPWSTR != null && generatedByProp.VTLPWSTR.Text == "True")
                     {
-                        var props = customProps.Properties;
-                        var generatedByProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == "GeneratedByNotaDog");
-                        if (generatedByProp != null && generatedByProp.VTLPWSTR  != null && generatedByProp.VTLPWSTR.Text == "True")
+                        var docTypeProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == "DocumentType");
+                        string documentType;
+                        if (docTypeProp != null && docTypeProp.VTLPWSTR != null)
                         {
-                            var docTypeProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == "DocumentType");
-                            string documentType;
-                            if (docTypeProp != null && docTypeProp.VTLPWSTR != null)
-                            {
-                                documentType = docTypeProp.VTLPWSTR.Text;
-                            }
-                            else
-                            {
-                                documentType = "Unknown";
-                            }
-
-                            return new DocumentInfo
-                            {
-                                FileName = Path.GetFileName(filePath),
-                                DocumentType = documentType,
-                                FilePath = filePath
-                            };
+                            documentType = docTypeProp.VTLPWSTR.Text;
                         }
+                        else
+                        {
+                            documentType = "Unknown";
+                        }
+
+                        return new DocumentInfo
+                        {
+                            FileName = Path.GetFileName(filePath),
+                            DocumentType = documentType,
+                            FilePath = filePath
+                        };
                     }
                 }
             }
@@ -114,18 +110,16 @@ namespace NotaDog.Services
         public static void CreateDocument(string filePath, string documentType)
         {
             // Create the Word document
-            using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(filePath, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
-            {
-                // Add main document part
-                MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
-                mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
+            using WordprocessingDocument wordDoc = WordprocessingDocument.Create(filePath, DocumentFormat.OpenXml.WordprocessingDocumentType.Document);
+            // Add main document part
+            MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
+            mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
 
-                // Add custom properties
-                AddCustomProperty(wordDoc, "GeneratedByNotaDog", "True");
-                AddCustomProperty(wordDoc, "DocumentType", documentType);
+            // Add custom properties
+            AddCustomProperty(wordDoc, "GeneratedByNotaDog", "True");
+            AddCustomProperty(wordDoc, "DocumentType", documentType);
 
-                // TODO: Add content to the document
-            }
+            // TODO: Add content to the document
         }
 
         private static void AddCustomProperty(WordprocessingDocument doc, string propName, string propValue)
@@ -147,10 +141,7 @@ namespace NotaDog.Services
 
             // Remove existing property with the same name if it exists
             var existingProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == propName);
-            if (existingProp != null)
-            {
-                existingProp.Remove();
-            }
+            existingProp?.Remove();
 
             props.AppendChild(prop);
             props.Save();

@@ -20,7 +20,7 @@ namespace NotaDog.Windows
     /// </summary>
     public partial class ConfigurationWindow : BaseWindow
     {
-        private string documentType;
+        private readonly string documentType;
 
         public ConfigurationWindow(string documentType)
         {
