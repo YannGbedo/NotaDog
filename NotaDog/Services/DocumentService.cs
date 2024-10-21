@@ -1,7 +1,10 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.CustomProperties;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System.Linq;
+using NotaDog.Controls;
+using NotaDog.Windows;
 
 namespace NotaDog.Services
 {
@@ -107,44 +110,104 @@ namespace NotaDog.Services
             return null;
         }
 
-        public static void CreateDocument(string filePath, string documentType)
+        public static void CreateDocument(string filePath, string documentType, NotaryInfo notaryInfo, PromesseDeVenteData? documentData)
         {
             // Create the Word document
             using WordprocessingDocument wordDoc = WordprocessingDocument.Create(filePath, DocumentFormat.OpenXml.WordprocessingDocumentType.Document);
             // Add main document part
             MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
             mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
+            Body body = mainPart.Document.AppendChild(new Body());
 
             // Add custom properties
             AddCustomProperty(wordDoc, "GeneratedByNotaDog", "True");
             AddCustomProperty(wordDoc, "DocumentType", documentType);
 
-            // TODO: Add content to the document
+            // Build the document content
+            BuildDocumentContent(body, notaryInfo, documentData);
         }
 
         private static void AddCustomProperty(WordprocessingDocument doc, string propName, string propValue)
         {
-            var customProps = doc.CustomFilePropertiesPart;
-            if (customProps == null)
+            CustomFilePropertiesPart customPropsPart;
+            if (doc.CustomFilePropertiesPart == null)
             {
-                customProps = doc.AddCustomFilePropertiesPart();
-                customProps.Properties = new DocumentFormat.OpenXml.CustomProperties.Properties();
+                customPropsPart = doc.AddCustomFilePropertiesPart();
+                customPropsPart.Properties = new DocumentFormat.OpenXml.CustomProperties.Properties();
+            }
+            else
+            {
+                customPropsPart = doc.CustomFilePropertiesPart;
             }
 
-            var props = customProps.Properties;
-            var prop = new CustomDocumentProperty
+            var props = customPropsPart.Properties;
+
+            // Check if the property already exists.
+            var existingProp = props.Elements<CustomDocumentProperty>()
+                .FirstOrDefault(p => p.Name.Value == propName);
+
+            if (existingProp != null)
             {
-                Name = propName,
-                FormatId = "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}", // Text format
-                VTLPWSTR = new DocumentFormat.OpenXml.VariantTypes.VTLPWSTR(propValue)
-            };
+                // Update the existing property value
+                existingProp.VTLPWSTR = new DocumentFormat.OpenXml.VariantTypes.VTLPWSTR(propValue);
+            }
+            else
+            {
+                // Get a unique PropertyId
+                int pid = 2; // Property IDs must start from 2
+                var existingPids = props.Elements<CustomDocumentProperty>()
+                    .Select(p => p.PropertyId.Value)
+                    .ToArray();
 
-            // Remove existing property with the same name if it exists
-            var existingProp = props.Elements<CustomDocumentProperty>().FirstOrDefault(p => p.Name?.Value == propName);
-            existingProp?.Remove();
+                while (existingPids.Contains(pid))
+                {
+                    pid++;
+                }
 
-            props.AppendChild(prop);
+                // Create the new custom property
+                CustomDocumentProperty newProp = new()
+                {
+                    Name = propName,
+                    PropertyId = pid,
+                    VTLPWSTR = new DocumentFormat.OpenXml.VariantTypes.VTLPWSTR(propValue),
+                    FormatId = "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" // Text format
+                };
+
+                props.AppendChild(newProp);
+            }
+
             props.Save();
+        }
+
+        private static void BuildDocumentContent(Body body, NotaryInfo notaryInfo, PromesseDeVenteData? documentData)
+        {
+            // Add Notary information
+            body.AppendChild(new Paragraph(new Run(new Text("Notary Information:"))) { ParagraphProperties = new ParagraphProperties(new Bold()) });
+
+            body.AppendChild(CreateParagraph($"First Name: {notaryInfo.FirstName}"));
+            body.AppendChild(CreateParagraph($"Last Name: {notaryInfo.LastName}"));
+            body.AppendChild(CreateParagraph($"City: {notaryInfo.City}"));
+            body.AppendChild(CreateParagraph($"Country: {notaryInfo.Country}"));
+            body.AppendChild(CreateParagraph($"Office Name: {notaryInfo.OfficeName}"));
+            body.AppendChild(CreateParagraph($"Office Address: {notaryInfo.OfficeAddress}"));
+            body.AppendChild(CreateParagraph($"Authority City: {notaryInfo.AuthorityCity}"));
+            body.AppendChild(CreateParagraph($"Authority Country: {notaryInfo.AuthorityCountry}"));
+
+            // Add a separator
+            body.AppendChild(new Paragraph(new Run(new Text(" "))));
+
+            // Add Document-specific information
+            body.AppendChild(new Paragraph(new Run(new Text("Document Information:"))) { ParagraphProperties = new ParagraphProperties(new Bold()) });
+
+            if (documentData != null)
+            {
+                //body.AppendChild(CreateParagraph($"Property Address: {documentData.PropertyAddress}"));
+                // Add other fields as needed
+            }
+        }
+        public static Paragraph CreateParagraph(string text)
+        {
+            return new Paragraph(new Run(new Text(text)));
         }
     }
 }

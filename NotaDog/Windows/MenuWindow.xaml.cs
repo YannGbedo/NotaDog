@@ -29,6 +29,9 @@ namespace NotaDog.Windows
             // Ensure the documents folder exists
             EnsureDocumentsFolderExists();
 
+            // Load the setting value
+            chkAlwaysUseDefaultSaveFolder.IsChecked = Properties.Settings.Default.AlwaysUseDefaultSaveFolder;
+
             string username = Properties.Settings.Default.Username;
             lblWelcome.Content = $"Bienvenue, {username}!";
 
@@ -134,7 +137,7 @@ namespace NotaDog.Windows
             else
             {
                 // Show the confirmation dialog
-                ConfirmationDialog dialog = new($"Do you want to open the document: {documentInfo.FileName}?")
+                ConfirmationDialog dialog = new("OpenDocument")
                 {
                     Owner = this // Optional, sets the owner window
                 };
@@ -168,6 +171,18 @@ namespace NotaDog.Windows
             {
                 System.Windows.MessageBox.Show($"Failed to open the document: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ChkAlwaysUseDefaultSaveFolder_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AlwaysUseDefaultSaveFolder = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void ChkAlwaysUseDefaultSaveFolder_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AlwaysUseDefaultSaveFolder = false;
+            Properties.Settings.Default.Save();
         }
     }
 }

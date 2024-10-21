@@ -21,7 +21,10 @@
                         <TextBox x:Name="txtDocumentsFolder" Width="250" Margin="5,0,0,0" IsReadOnly="True"/>
                         <Button Content="Browse..." Margin="5,0,0,0" Click="BrowseButton_Click"/>
                     </StackPanel>
-                    <CheckBox x:Name="chkAlwaysOpenWithoutPrompt" Content="Always open documents without prompt" Margin="5,10,0,0"/>
+                    <Label Content="Confirmation Settings:" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <CheckBox x:Name="chkAlwaysOpenWithoutPrompt" Content="Always open documents without prompt" Margin="0,5,0,0"/>
+                    <CheckBox x:Name="chkSkipCreateDocumentConfirmation" Content="Always create documents without prompt" Margin="0,5,0,0"/>
+                    <CheckBox x:Name="chkSkipCancelConfigurationConfirmation" Content="Always cancel configuration without prompt" Margin="0,5,0,0"/>
 
                     <!-- Separator -->
                     <Separator Margin="0,10,0,10"/>

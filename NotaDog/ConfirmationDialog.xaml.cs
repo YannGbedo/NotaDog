@@ -21,10 +21,19 @@ namespace NotaDog
     {
         public bool SkipPrompt { get; private set; } = false;
         public bool Result { get; private set; } = false;
-        public ConfirmationDialog(string message)
+
+        public ConfirmationDialog(string confirmationType)
         {
             InitializeComponent();
-            txtMessage.Text = message;
+
+            // Set the message and checkbox based on the confirmation type
+            txtMessage.Text = confirmationType switch
+            {
+                "OpenDocument" => "Do you want to open this document?",
+                "CreateDocumentConfirm" => "Are you sure you want to create this document?",
+                "CancelConfiguration" => "Are you sure you want to cancel? All unsaved changes will be lost.",
+                _ => "Are you sure you want to proceed?",
+            };
         }
 
         private void YesButton_Click(object sender, RoutedEventArgs e)
@@ -37,7 +46,6 @@ namespace NotaDog
 
         private void NoButton_Click(object sender, RoutedEventArgs e)
         {
-            SkipPrompt = chkSkipPrompt.IsChecked == true;
             Result = false; // User canceled
             this.DialogResult = false;
             this.Close();

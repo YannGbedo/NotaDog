@@ -30,6 +30,8 @@ namespace NotaDog.Windows
             }
             txtDocumentsFolder.Text = documentsFolder;
             chkAlwaysOpenWithoutPrompt.IsChecked = Properties.Settings.Default.AlwaysOpenWithoutPrompt;
+            chkSkipCreateDocumentConfirmation.IsChecked = Properties.Settings.Default.SkipCreateDocumentConfirmation;
+            chkSkipCancelConfigurationConfirmation.IsChecked = Properties.Settings.Default.SkipCancelConfigurationConfirmation;
 
             // Load Notary Information
             txtNotaryFirstName.Text = Properties.Settings.Default.NotaryFirstName;
@@ -55,6 +57,9 @@ namespace NotaDog.Windows
             // Save the settings
             Properties.Settings.Default.DocumentsFolder = folderPath;
             Properties.Settings.Default.AlwaysOpenWithoutPrompt = chkAlwaysOpenWithoutPrompt.IsChecked == true;
+            Properties.Settings.Default.SkipCreateDocumentConfirmation = chkSkipCreateDocumentConfirmation.IsChecked == true;
+            Properties.Settings.Default.SkipCancelConfigurationConfirmation = chkSkipCancelConfigurationConfirmation.IsChecked == true;
+
 
             // Save Notary Information
             Properties.Settings.Default.NotaryFirstName = txtNotaryFirstName.Text;

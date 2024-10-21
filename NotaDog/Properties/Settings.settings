@@ -29,9 +29,6 @@
     <Setting Name="DocumentsFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="AlwaysOpenWithoutPrompt" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="NotaryFirstName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -55,6 +52,18 @@
     </Setting>
     <Setting Name="NotaryAuthorityCountry" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SkipCreateDocumentConfirmation" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AlwaysOpenWithoutPrompt" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SkipCancelConfigurationConfirmation" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AlwaysUseDefaultSaveFolder" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

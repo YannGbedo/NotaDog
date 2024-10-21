@@ -15,6 +15,10 @@ using System.Windows.Shapes;
 
 namespace NotaDog.Controls
 {
+    public class PromesseDeVenteData
+    {
+        public string? PropertyAddress { get; set; }
+    }
     /// <summary>
     /// Logique d'interaction pour PromesseDeVenteControl.xaml
     /// </summary>
@@ -23,6 +27,14 @@ namespace NotaDog.Controls
         public PromesseDeVenteControl()
         {
             InitializeComponent();
+        }
+
+        public PromesseDeVenteData GetData()
+        {
+            return new PromesseDeVenteData
+            {
+                // Add other fields as needed
+            };
         }
     }
 }

@@ -133,18 +133,6 @@ namespace NotaDog.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AlwaysOpenWithoutPrompt {
-            get {
-                return ((bool)(this["AlwaysOpenWithoutPrompt"]));
-            }
-            set {
-                this["AlwaysOpenWithoutPrompt"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string NotaryFirstName {
             get {
@@ -236,6 +224,54 @@ namespace NotaDog.Properties {
             }
             set {
                 this["NotaryAuthorityCountry"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SkipCreateDocumentConfirmation {
+            get {
+                return ((bool)(this["SkipCreateDocumentConfirmation"]));
+            }
+            set {
+                this["SkipCreateDocumentConfirmation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AlwaysOpenWithoutPrompt {
+            get {
+                return ((bool)(this["AlwaysOpenWithoutPrompt"]));
+            }
+            set {
+                this["AlwaysOpenWithoutPrompt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SkipCancelConfigurationConfirmation {
+            get {
+                return ((bool)(this["SkipCancelConfigurationConfirmation"]));
+            }
+            set {
+                this["SkipCancelConfigurationConfirmation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AlwaysUseDefaultSaveFolder {
+            get {
+                return ((bool)(this["AlwaysUseDefaultSaveFolder"]));
+            }
+            set {
+                this["AlwaysUseDefaultSaveFolder"] = value;
             }
         }
     }
