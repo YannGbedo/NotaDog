@@ -6,7 +6,7 @@
                   xmlns:local="clr-namespace:NotaDog.Windows"
                   mc:Ignorable="d"
                   Title="{Binding Title}"
-                  MinHeight="400" MinWidth="700">
+                  MinHeight="900" MinWidth="900">
     <Grid Margin="10">
         <!-- Define rows -->
         <Grid.RowDefinitions>
@@ -28,11 +28,7 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <!-- First Row -->
@@ -63,6 +59,13 @@
                             <Label Content="Adresse:" Margin="5,0,0,0" Width="auto"/>
                             <TextBox x:Name="txtNotaryOfficeAddress" Margin="5,0,0,0" MinWidth="500"/>
                         </StackPanel>
+
+                        <!-- Case à cocher pour enregistrer les informations du notaire -->
+                        <CheckBox x:Name="chkSaveNotaryInfo"
+          Grid.Row="3"
+          Content="Enregistrer ces informations pour la prochaine fois"
+          Margin="5,0,0,0"
+          HorizontalAlignment="Center"/>
                     </Grid>
                 </GroupBox>
 
@@ -79,6 +82,8 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Confirm" Width="100" Margin="5" Click="ConfirmButton_Click"/>
             <Button Content="Cancel" Width="100" Margin="5" Click="CancelButton_Click"/>
+            <!-- Nouvelle case à cocher -->
+            <CheckBox x:Name="chkOpenAfterCreation" Content="Ouvrir le fichier après création" Margin="8"/>
         </StackPanel>
     </Grid>
 </local:BaseWindow>

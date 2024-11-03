@@ -49,12 +49,6 @@
 
                     <Label Content="Office Address:"/>
                     <TextBox x:Name="txtNotaryOfficeAddress" Width="250"/>
-
-                    <Label Content="Authority City:"/>
-                    <TextBox x:Name="txtNotaryAuthorityCity" Width="250"/>
-
-                    <Label Content="Authority Country:"/>
-                    <TextBox x:Name="txtNotaryAuthorityCountry" Width="250"/>
                 </StackPanel>
             </ScrollViewer>
         </Border>

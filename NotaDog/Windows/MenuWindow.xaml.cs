@@ -2,18 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using NotaDog.Services;
+using MessageBox = System.Windows.MessageBox;
 
 namespace NotaDog.Windows
 {
@@ -161,18 +154,6 @@ namespace NotaDog.Windows
             }
         }
 
-        private static void OpenDocumentFile(string filePath)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show($"Failed to open the document: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void ChkAlwaysUseDefaultSaveFolder_Checked(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.AlwaysUseDefaultSaveFolder = true;
@@ -183,6 +164,51 @@ namespace NotaDog.Windows
         {
             Properties.Settings.Default.AlwaysUseDefaultSaveFolder = false;
             Properties.Settings.Default.Save();
+        }
+
+        private void MenuItem_Open_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetSelectedDocument(sender) is DocumentInfo selectedDocument)
+            {
+                // Appeler votre méthode pour ouvrir le document
+                OpenDocumentFile(selectedDocument.FilePath);
+            }
+        }
+
+        private void MenuItem_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetSelectedDocument(sender) is DocumentInfo selectedDocument)
+            {
+                // Demander une confirmation avant de supprimer
+                var result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le document '{selectedDocument.FileName}' ?", "Confirmer la suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        File.Delete(selectedDocument.FilePath);
+                        // Rafraîchir la liste des documents
+                        LoadDocumentsList();
+                        LoadDocumentTypes();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erreur lors de la suppression du document : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        private DocumentInfo? GetSelectedDocument(object sender)
+        {
+            if (sender is MenuItem menuItem)
+            {
+                if (menuItem.DataContext is DocumentInfo documentInfo)
+                {
+                    return documentInfo;
+                }
+            }
+            return null;
         }
     }
 }

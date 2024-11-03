@@ -36,21 +36,15 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="NotaryCity" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">COTONOU</Value>
     </Setting>
     <Setting Name="NotaryCountry" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">BENIN</Value>
     </Setting>
     <Setting Name="NotaryOfficeName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="NotaryOfficeAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="NotaryAuthorityCity" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="NotaryAuthorityCountry" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SkipCreateDocumentConfirmation" Type="System.Boolean" Scope="User">

@@ -1,12 +1,462 @@
 ﻿<UserControl x:Class="NotaDog.Controls.PromesseDeVenteControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NotaDog.Controls"
-             mc:Ignorable="d" 
+             xmlns:conv="clr-namespace:NotaDog.Converters"
+             xmlns:data="clr-namespace:NotaDog.Data"
              Height="Auto" Width="Auto">
-    <Grid>
-        <TextBlock Text="Hello vente!" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-    </Grid>
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <conv:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
+    </UserControl.Resources>
+    <StackPanel HorizontalAlignment="Center" Margin="10">
+        <!-- Présence de témoins -->
+        <CheckBox Content="Présence de témoins"
+                      IsChecked="{Binding PresenceTemoins, Mode=TwoWay}" />
+        <!-- Nombre de témoins (visible si PrésenceTemoins est true) -->
+        <StackPanel Orientation="Horizontal" Margin="0,5,0,0"
+                        Visibility="{Binding PresenceTemoins, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Label Content="Nombre de témoins :" />
+            <TextBox Width="50"
+                    Text="{Binding NombreTemoins, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextChanged="NombreTemoinsTextBox_TextChanged" />
+        </StackPanel>
+        <!-- Liste des témoins -->
+        <ItemsControl HorizontalAlignment="Center" ItemsSource="{Binding Temoins}"
+                          Visibility="{Binding PresenceTemoins, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <GroupBox Header="Témoin" Margin="5" Width="300">
+                        <local:PersonControl Person="{Binding}" />
+                    </GroupBox>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,10,0,0">
+            <GroupBox Header="Promettant" Margin="5" Width="300">
+                <local:PersonControl Person="{Binding Promettant}" />
+            </GroupBox>
+            <GroupBox Header="Bénéficiaire" Margin="5" Width="300">
+                <local:PersonControl Person="{Binding Beneficiaire}" />
+            </GroupBox>
+        </StackPanel>
+        <!-- Section Immeuble -->
+        <GroupBox HorizontalAlignment="Center" Header="Immeuble" Margin="0,10,0,0">
+            <StackPanel>
+                <!-- Première ligne : Rural ou Urbain, Titre foncier, Immeuble bâti -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <CheckBox Content="Rural"
+                      IsChecked="{Binding Immeuble.IsRural, Mode=TwoWay}" />
+                    <CheckBox Content="Titre foncier"
+                      IsChecked="{Binding Immeuble.HasTitreFoncier, Mode=TwoWay}" Margin="20,0,0,0" />
+                    <CheckBox Content="Immeuble bâti"
+                      IsChecked="{Binding Immeuble.IsBati, Mode=TwoWay}" Margin="20,0,0,0" />
+                </StackPanel>
+                <!-- Deuxième ligne : Forme, Parcelle -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Forme :" />
+                    <TextBox Text="{Binding Immeuble.Forme, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                    <Label Content="Parcelle :" Margin="20,0,0,0" />
+                    <TextBox Text="{Binding Immeuble.Parcelle, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Troisième ligne : Sise, Commune -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Sise :" />
+                    <TextBox Text="{Binding Immeuble.Sise, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                    <Label Content="Commune :" Margin="20,0,0,0" />
+                    <TextBox Text="{Binding Immeuble.Commune, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Quatrième ligne : Contenance totale, Objet -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Contenance totale :" />
+                    <TextBox Text="{Binding Immeuble.ContenanceTotale, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+                    <Label Content="Objet :" Margin="20,0,0,0" />
+                    <TextBox Text="{Binding Immeuble.Objet, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Meubles vendus simultanément -->
+        <CheckBox HorizontalAlignment="Center" Content="Meubles vendus simultanément"
+          IsChecked="{Binding MeublesVenduSimultanement, Mode=TwoWay}"
+          Margin="0,10,0,0" />
+        <!-- Nombre de Meubles (visible si MeublesVenduSimultanement est vrai) -->
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,5,0,0"
+            Visibility="{Binding MeublesVenduSimultanement, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Label Content="Nombre de meubles :" />
+            <TextBox Width="50"
+                Text="{Binding NombreMeubles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                TextChanged="NombreMeublesTextBox_TextChanged" />
+        </StackPanel>
+
+        <!-- Désignations et Estimations des meubles -->
+        <ItemsControl ItemsSource="{Binding DesignationsEstimations}"
+              Visibility="{Binding NombreMeubles, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <Label Content="Désignation :" />
+                        <TextBox Text="{Binding Designation, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+                        <Label Content="Estimation :" Margin="20,0,0,0" />
+                        <TextBox Text="{Binding Estimation, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Date butoir demande de réalisation de la vente -->
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,5,0,0"
+            Visibility="{Binding MeublesVenduSimultanement, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Label Content="Date butoir de réalisation de la vente :" />
+            <DatePicker SelectedDate="{Binding DateButoireDemandeVente, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+        </StackPanel>
+
+        <!-- Champs pour l'entrée différée -->
+        <StackPanel Margin="0,5,0,0"
+        Visibility="{Binding EntreeJouissanceImmediate, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+            <!-- Faculté de substitution -->
+            <CheckBox Content="Faculté de substitution"
+                        IsChecked="{Binding FaculteSubstitution, Mode=TwoWay}"
+                        Margin="0,10,0,0" />
+            <!-- Date butoir -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Date butoir :" />
+                <DatePicker SelectedDate="{Binding DateButoireJouissance, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Astreinte -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Astreinte :" />
+                <TextBox Text="{Binding Astreinte, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Dépositaire séquestre -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Dépositaire séquestre :" />
+                <TextBox Text="{Binding DepositaireSequestre, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Receveur dépôt -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Receveur dépôt :" />
+                <TextBox Text="{Binding ReceveurDepot, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Prix principal -->
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <Label Content="Prix principal :" />
+            <TextBox Text="{Binding PrixPrincipal, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+        </StackPanel>
+        <!-- Champs pour l'immeuble bâti -->
+        <StackPanel Margin="0,5,0,0"
+            Visibility="{Binding Immeuble.IsBati, Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Prix terrain nu -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Prix terrain nu :" />
+                <TextBox Text="{Binding PrixTerrainNu, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Prix constructions -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Prix constructions :" />
+                <TextBox Text="{Binding PrixConstructions, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+        </StackPanel>
+        <!-- Exemption de taxe au régime -->
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <Label Content="Exemption de taxe au régime :" />
+            <ComboBox SelectedValue="{Binding ExemptionRegime, Mode=TwoWay}"
+              Width="300" Margin="5,0,0,0">
+                <ComboBoxItem Content="Aucune" Tag="{x:Null}" />
+                <ComboBoxItem Content="Entreprise IS" Tag="{x:Static data:ExemptionRegime.EntrepriseIS}" />
+                <ComboBoxItem Content="Entreprise IBA" Tag="{x:Static data:ExemptionRegime.EntrepriseIBA}" />
+                <ComboBoxItem Content="État" Tag="{x:Static data:ExemptionRegime.Etat}" />
+                <ComboBoxItem Content="Établissement Public à caractère administratif" Tag="{x:Static data:ExemptionRegime.EtablissementPublicAdministratif}" />
+                <ComboBoxItem Content="Société Nationale" Tag="{x:Static data:ExemptionRegime.SocieteNationale}" />
+                <ComboBoxItem Content="Société à participation Publique pour l'habitat" Tag="{x:Static data:ExemptionRegime.SocieteParticipationPubliqueHabitat}" />
+                <ComboBoxItem Content="Collectivité Publique" Tag="{x:Static data:ExemptionRegime.CollectivitePublique}" />
+                <ComboBoxItem Content="Organisme Public aux acquisitions exonérées" Tag="{x:Static data:ExemptionRegime.OrganismePublicAcquisitionsExonere}" />
+                <ComboBoxItem Content="Organisme Privé aux acquisitions exonérées" Tag="{x:Static data:ExemptionRegime.OrganismePriveAcquisitionsExonere}" />
+            </ComboBox>
+        </StackPanel>
+        <!-- Servitude connue -->
+        <CheckBox Content="Servitude connue"
+          IsChecked="{Binding ServitudeConnue, Mode=TwoWay}"
+          Margin="0,10,0,0" />
+
+        <!-- Champ Servitude De (visible si ServitudeConnue est true) -->
+        <StackPanel Orientation="Horizontal" Margin="0,5,0,0"
+            Visibility="{Binding ServitudeConnue, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Label Content="Servitude de :" />
+            <TextBox Text="{Binding ServitudeDe, Mode=TwoWay}" Width="300" Margin="5,0,0,0" />
+        </StackPanel>
+
+        <!-- Obtention d'une note de renseignement d'urbanisme ou certificat d'urbanisme -->
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <CheckBox Content="Obtention d'une note de renseignement d'urbanisme nécessaire"
+              IsChecked="{Binding NecessiteNoteRenseignementUrbanisme, Mode=TwoWay}" />
+            <CheckBox Content="Obtention d'un certificat d'urbanisme nécessaire"
+              IsChecked="{Binding NecessiteCertificatUrbanisme, Mode=TwoWay}" Margin="20,0,0,0" />
+        </StackPanel>
+
+        <!-- Obtention d'un prêt par le bénéficiaire -->
+        <CheckBox Content="Obtention d'un prêt nécessaire"
+          IsChecked="{Binding ObtentionPretNecessaire, Mode=TwoWay}"
+          Margin="0,10,0,0" />
+
+        <!-- Champs si obtention de prêt est true -->
+        <StackPanel Margin="0,5,0,0"
+            Visibility="{Binding ObtentionPretNecessaire, Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Montant total -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Montant total :" />
+                <TextBox Text="{Binding MontantTotalPret, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Durée -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Durée :" />
+                <TextBox Text="{Binding DureePret, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Taux -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Taux :" />
+                <TextBox Text="{Binding TauxPret, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Date butoir -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Date butoir :" />
+                <DatePicker SelectedDate="{Binding DateButoirePret, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Démarches pour le certificat d'appartenance -->
+        <!-- Visible si HasTitreFoncier est false -->
+        <StackPanel Margin="0,10,0,0"
+            Visibility="{Binding Immeuble.HasTitreFoncier, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+            <Label Content="Démarches pour le certificat d'appartenance :" FontWeight="Bold" />
+            <!-- Case à cocher : Le Promettant fait les démarches -->
+            <CheckBox Content="Le Promettant fait les démarches"
+              IsChecked="{Binding PromettantFaitDemarcheCertificat, Mode=TwoWay}"
+              Margin="0,5,0,0"
+              IsThreeState="False" />
+            <!-- Champs si le Promettant ne fait pas les démarches (Notaire fait les démarches) -->
+            <StackPanel Margin="0,5,0,0"
+                Visibility="{Binding PromettantFaitDemarcheCertificat, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                <!-- Nombre de documents -->
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Nombre de documents :" />
+                    <TextBox Text="{Binding NombreDocumentsCertificat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Width="50" Margin="5,0,0,0"
+                     TextChanged="NombreDocumentsCertificat_TextChanged" />
+                </StackPanel>
+                <!-- Liste des pièces -->
+                <ItemsControl ItemsSource="{Binding PiecesCertificat}"
+                      Visibility="{Binding NombreDocumentsCertificat, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                <Label Content="Pièce :" />
+                                <TextBox Text="{Binding ., Mode=TwoWay}" Width="300" Margin="5,0,0,0" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Versement d'une indemnité -->
+        <CheckBox Content="Versement d'une indemnité"
+          IsChecked="{Binding VersementIndemnite, Mode=TwoWay}"
+          Margin="0,10,0,0" />
+
+        <!-- Champs si VersementIndemnite est true -->
+        <StackPanel Margin="0,5,0,0"
+            Visibility="{Binding VersementIndemnite, Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Versement à un séquestre -->
+            <CheckBox Content="Versement à un séquestre"
+              IsChecked="{Binding VersementSequestre, Mode=TwoWay}" />
+            <!-- Numéro de chèque -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Numéro de chèque :" />
+                <TextBox Text="{Binding NumeroCheque, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Banque -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Banque :" />
+                <TextBox Text="{Binding Banque, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Somme -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Somme :" />
+                <TextBox Text="{Binding Somme, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+            </StackPanel>
+
+            <!-- Champs si VersementSequestre est true -->
+            <StackPanel Margin="0,5,0,0"
+                Visibility="{Binding VersementSequestre, Converter={StaticResource BoolToVisibilityConverter}}">
+                <!-- Nom séquestre -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Nom séquestre :" />
+                    <TextBox Text="{Binding NomSequestre, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Présence du séquestre -->
+                <CheckBox Content="Présence du séquestre"
+                  IsChecked="{Binding PresenceSequestre, Mode=TwoWay}" Margin="0,5,0,0" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Somme clause pénale -->
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <Label Content="Somme clause pénale :" />
+            <TextBox Text="{Binding SommeClausePenale, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+        </StackPanel>
+
+        <!-- Informations supplémentaires si l'immeuble est bâti -->
+        <StackPanel Margin="0,10,0,0"
+            Visibility="{Binding Immeuble.IsBati, Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Permis de construire obtenu -->
+            <CheckBox Content="Permis de construire obtenu"
+              IsChecked="{Binding PermisConstruireObtenu, Mode=TwoWay}" />
+            <!-- Construit par le Promettant -->
+            <CheckBox Content="Construit par le Promettant"
+              IsChecked="{Binding ConstruitParPromettant, Mode=TwoWay}" Margin="0,5,0,0" />
+            <!-- Délivreur du permis -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Délivreur du permis :" />
+                <TextBox Text="{Binding DelivreurPermis, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Date de délivrance du permis -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Date de délivrance du permis :" />
+                <DatePicker SelectedDate="{Binding DateDelivrancePermis, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Lieu d'ouverture du chantier -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Lieu d'ouverture du chantier :" />
+                <TextBox Text="{Binding LieuOuvertureChantier, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Date d'ouverture du chantier -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Date d'ouverture du chantier :" />
+                <DatePicker SelectedDate="{Binding DateOuvertureChantier, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Lieu déclaration d'achèvement -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Lieu déclaration d'achèvement :" />
+                <TextBox Text="{Binding LieuDeclarationAchevement, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Date déclaration d'achèvement -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Date déclaration d'achèvement :" />
+                <DatePicker SelectedDate="{Binding DateDeclarationAchevement, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Délivreur certificat de conformité -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Délivreur certificat de conformité :" />
+                <TextBox Text="{Binding DelivreurCertificatConformite, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Date de délivrance du certificat habilité -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Date de délivrance du certificat habilité :" />
+                <DatePicker SelectedDate="{Binding DateDelivranceCertificatHabilite, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+            </StackPanel>
+            <!-- Promettant a souscrit à une assurance -->
+            <CheckBox Content="Promettant a souscrit à une assurance"
+              IsChecked="{Binding PromettantSouscritAssurance, Mode=TwoWay}" Margin="0,5,0,0" />
+            <!-- Assurances des entreprises obtenues -->
+            <CheckBox Content="Assurances des entreprises obtenues"
+              IsChecked="{Binding AssurancesEntreprisesObtenu, Mode=TwoWay}" Margin="0,5,0,0" />
+            <!-- Exemption d'assurance construction -->
+            <CheckBox Content="Exemption d'assurance construction"
+              IsChecked="{Binding ExemptionAssuranceConstruction, Mode=TwoWay}" Margin="0,5,0,0" />
+            <!-- Nombre d'attestations -->
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Label Content="Nombre d'attestations :" />
+                <TextBox Text="{Binding NombreAttestations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="5,0,0,0" TextChanged="NombreAttestations_TextChanged" />
+            </StackPanel>
+            <!-- Liste des attestations -->
+            <ItemsControl ItemsSource="{Binding Attestations}"
+                  Visibility="{Binding NombreAttestations, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label Content="Attestation :" />
+                            <TextBox Text="{Binding ., Mode=TwoWay}" Width="300" Margin="5,0,0,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Champs si Promettant a souscrit à une assurance est true -->
+            <StackPanel Margin="0,5,0,0"
+                Visibility="{Binding PromettantSouscritAssurance, Converter={StaticResource BoolToVisibilityConverter}}">
+                <!-- Assurance tous risques -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Assurance tous risques :" />
+                    <TextBox Text="{Binding AssuranceTousRisques, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Numéro police assurance tous risques -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Numéro police assurance tous risques :" />
+                    <TextBox Text="{Binding NumeroPoliceAssuranceTousRisques, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Date assurance tous risques -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Date assurance tous risques :" />
+                    <DatePicker SelectedDate="{Binding DateAssuranceTousRisques, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Assurance dommage -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Assurance dommage :" />
+                    <TextBox Text="{Binding AssuranceDommage, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Numéro police dommage -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Numéro police dommage :" />
+                    <TextBox Text="{Binding NumeroPoliceAssuranceDommage, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Date assurance dommage -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Date assurance dommage :" />
+                    <DatePicker SelectedDate="{Binding DateAssuranceDommage, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Assurance responsabilité civile -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Assurance responsabilité civile :" />
+                    <TextBox Text="{Binding AssuranceResponsabiliteCivile, Mode=TwoWay}" Width="200" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Numéro police responsabilité civile -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Numéro police responsabilité civile :" />
+                    <TextBox Text="{Binding NumeroPoliceAssuranceResponsabiliteCivile, Mode=TwoWay}" Width="100" Margin="5,0,0,0" />
+                </StackPanel>
+                <!-- Date assurance responsabilité civile -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Label Content="Date assurance responsabilité civile :" />
+                    <DatePicker SelectedDate="{Binding DateAssuranceResponsabiliteCivile, Mode=TwoWay}" Width="150" Margin="5,0,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Renvois et mentions légales -->
+        <Label Content="Renvois et mentions légales" FontWeight="Bold" Margin="0,10,0,0" />
+        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <Label Content="Renvois :" />
+            <TextBox Text="{Binding Renvois, Mode=TwoWay}" Width="50" Margin="5,0,0,0" />
+            <Label Content="Mots rayés nuls :" Margin="20,0,0,0" />
+            <TextBox Text="{Binding MotsRayesNuls, Mode=TwoWay}" Width="50" Margin="5,0,0,0" />
+            <Label Content="Chiffres rayés nuls :" Margin="20,0,0,0" />
+            <TextBox Text="{Binding ChiffresRayesNuls, Mode=TwoWay}" Width="50" Margin="5,0,0,0" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <Label Content="Lignes entières rayées nulles :" />
+            <TextBox Text="{Binding LignesRayeesNulles, Mode=TwoWay}" Width="50" Margin="5,0,0,0" />
+            <Label Content="Barres tirées dans les blancs :" Margin="20,0,0,0" />
+            <TextBox Text="{Binding BarresTireesBlancs, Mode=TwoWay}" Width="50" Margin="5,0,0,0" />
+        </StackPanel>
+
+    </StackPanel>
 </UserControl>

@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="NotaDog.Controls.PersonControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NotaDog.Controls"
+             xmlns:conv="clr-namespace:NotaDog.Converters"
+             mc:Ignorable="d" 
+             Height="Auto" Width="Auto">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel Margin="5">
+            <Label Content="Genre :" />
+            <ComboBox SelectedValue="{Binding Genre, Mode=TwoWay}" Width="200">
+                <ComboBoxItem Content="Masculin" Tag="Male" />
+                <ComboBoxItem Content="Féminin" Tag="Femelle" />
+                <ComboBoxItem Content="Autre" Tag="Autre" />
+            </ComboBox>
+            <Label Content="Nom :" />
+            <TextBox Text="{Binding Nom, Mode=TwoWay}" Width="200" />
+            <Label Content="Prénom :" />
+            <TextBox Text="{Binding Prenom, Mode=TwoWay}" Width="200" />
+            <Label Content="Profession :" />
+            <TextBox Text="{Binding Profession, Mode=TwoWay}" Width="200" />
+            <Label Content="Adresse :" />
+            <TextBox Text="{Binding Adresse, Mode=TwoWay}" Width="200" />
+            <Label Content="Ville de naissance :" />
+            <TextBox Text="{Binding VilleNaissance, Mode=TwoWay}" Width="200" />
+            <Label Content="Pays de naissance :" />
+            <TextBox Text="{Binding PaysNaissance, Mode=TwoWay}" Width="200" />
+            <Label Content="Date de naissance :" />
+            <DatePicker SelectedDate="{Binding DateNaissance, Mode=TwoWay}" Width="200" />
+            <Label Content="Type d'identification :" />
+            <ComboBox SelectedValue="{Binding TypeID, Mode=TwoWay}" Width="200">
+                <ComboBoxItem Content="Carte d'identité" Tag="CarteIdentite" />
+                <ComboBoxItem Content="Passeport" Tag="Passeport" />
+                <ComboBoxItem Content="Autre" Tag="Autre" />
+            </ComboBox>
+            <Label Content="Numéro d'identification :" />
+            <TextBox Text="{Binding IDNumber, Mode=TwoWay}" Width="200" />
+            <Label Content="Origine de l'identification :" />
+            <ComboBox SelectedValue="{Binding IdOrigin, Mode=TwoWay}" Width="200">
+                <ComboBoxItem Content="Exemple 1" Tag="Exemple1" />
+                <ComboBoxItem Content="Exemple 2" Tag="Exemple2" />
+            </ComboBox>
+            <Label Content="Validité de l'identification jusqu'au :" />
+            <DatePicker SelectedDate="{Binding IdValidUntil, Mode=TwoWay}" Width="200" />
+            <Label Content="Nationalité :" />
+            <TextBox Text="{Binding Nationalite, Mode=TwoWay}" Width="200" />
+            <Label Content="Statut marital :" />
+            <ComboBox SelectedValue="{Binding MaritalStatus, Mode=TwoWay}" Width="200">
+                <ComboBoxItem Content="Marié" Tag="Married" />
+                <ComboBoxItem Content="Célibataire" Tag="Celibate" />
+                <ComboBoxItem Content="Autre" Tag="Other" />
+            </ComboBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

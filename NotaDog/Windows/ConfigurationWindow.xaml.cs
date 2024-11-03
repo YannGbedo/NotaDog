@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using DocumentFormat.OpenXml.Packaging;
 using NotaDog.Controls;
@@ -20,6 +10,7 @@ using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
 using Bold = DocumentFormat.OpenXml.Wordprocessing.Bold;
 using Microsoft.Win32;
+using NotaDog.Interfaces;
 
 namespace NotaDog.Windows
 {
@@ -32,8 +23,6 @@ namespace NotaDog.Windows
         public string? Country { get; set; }
         public string? OfficeName { get; set; }
         public string? OfficeAddress { get; set; }
-        public string? AuthorityCity { get; set; }
-        public string? AuthorityCountry { get; set; }
     }
         /// <summary>
         /// Logique d'interaction pour ConfigurationWindow.xaml
@@ -113,6 +102,12 @@ namespace NotaDog.Windows
                         Properties.Settings.Default.Save();
                     }
 
+                    // Enregistrer les informations du notaire si la case est cochée
+                    if (chkSaveNotaryInfo.IsChecked == true)
+                    {
+                        SaveNotaryInfo();
+                    }
+
                     // Proceed with document creation
                     CreateDocument();
                 }
@@ -121,6 +116,18 @@ namespace NotaDog.Windows
                     // User canceled; do nothing
                 }
             }
+        }
+
+        private void SaveNotaryInfo()
+        {
+            Properties.Settings.Default.NotaryFirstName = txtNotaryFirstName.Text;
+            Properties.Settings.Default.NotaryLastName = txtNotaryLastName.Text;
+            Properties.Settings.Default.NotaryCity = txtNotaryCity.Text;
+            Properties.Settings.Default.NotaryCountry = txtNotaryCountry.Text;
+            Properties.Settings.Default.NotaryOfficeName = txtNotaryOfficeName.Text;
+            Properties.Settings.Default.NotaryOfficeAddress = txtNotaryOfficeAddress.Text;
+
+            Properties.Settings.Default.Save();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -170,18 +177,8 @@ namespace NotaDog.Windows
                 City = txtNotaryCity.Text,
                 Country = txtNotaryCountry.Text,
                 OfficeName = txtNotaryOfficeName.Text,
-                OfficeAddress = txtNotaryOfficeAddress.Text,
-                AuthorityCity = txtNotaryCity.Text,
-                AuthorityCountry = txtNotaryCountry.Text
+                OfficeAddress = txtNotaryOfficeAddress.Text
             };
-
-            // Collect document-specific data
-            PromesseDeVenteData? documentData = null;
-            if (MainContent.Content is PromesseDeVenteControl venteControl)
-            {
-                documentData = venteControl.GetData();
-                // Use notaryInfo and documentData to create the document
-            }
 
             // Open a folder choosing dialog
             string? filePath = GetSaveFilePath();
@@ -191,11 +188,16 @@ namespace NotaDog.Windows
                 return;
             }
 
-            // Create a Word document for testing
             // Create the document using DocumentService
-            DocumentService.CreateDocument(filePath, this.documentType, notaryInfo, documentData);
+            DocumentService.CreateDocument(filePath, documentType: documentType, notaryInfo: notaryInfo, documentControl: MainContent.Content);
 
             System.Windows.MessageBox.Show("Document created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Ouvrir le document si la case est cochée
+            if (chkOpenAfterCreation.IsChecked == true)
+            {
+                OpenDocumentFile(filePath);
+            }
 
             // Switch back to the menu window or perform other actions as needed
             MenuWindow menuWindow = new();

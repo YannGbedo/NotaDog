@@ -157,7 +157,7 @@ namespace NotaDog.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("COTONOU")]
         public string NotaryCity {
             get {
                 return ((string)(this["NotaryCity"]));
@@ -169,7 +169,7 @@ namespace NotaDog.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("BENIN")]
         public string NotaryCountry {
             get {
                 return ((string)(this["NotaryCountry"]));
@@ -200,30 +200,6 @@ namespace NotaDog.Properties {
             }
             set {
                 this["NotaryOfficeAddress"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string NotaryAuthorityCity {
-            get {
-                return ((string)(this["NotaryAuthorityCity"]));
-            }
-            set {
-                this["NotaryAuthorityCity"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string NotaryAuthorityCountry {
-            get {
-                return ((string)(this["NotaryAuthorityCountry"]));
-            }
-            set {
-                this["NotaryAuthorityCountry"] = value;
             }
         }
         

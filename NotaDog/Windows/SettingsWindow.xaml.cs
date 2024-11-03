@@ -40,8 +40,6 @@ namespace NotaDog.Windows
             txtNotaryCountry.Text = Properties.Settings.Default.NotaryCountry;
             txtNotaryOfficeName.Text = Properties.Settings.Default.NotaryOfficeName;
             txtNotaryOfficeAddress.Text = Properties.Settings.Default.NotaryOfficeAddress;
-            txtNotaryAuthorityCity.Text = Properties.Settings.Default.NotaryAuthorityCity;
-            txtNotaryAuthorityCountry.Text = Properties.Settings.Default.NotaryAuthorityCountry;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -68,8 +66,6 @@ namespace NotaDog.Windows
             Properties.Settings.Default.NotaryCountry = txtNotaryCountry.Text;
             Properties.Settings.Default.NotaryOfficeName = txtNotaryOfficeName.Text;
             Properties.Settings.Default.NotaryOfficeAddress = txtNotaryOfficeAddress.Text;
-            Properties.Settings.Default.NotaryAuthorityCity = txtNotaryAuthorityCity.Text;
-            Properties.Settings.Default.NotaryAuthorityCountry = txtNotaryAuthorityCountry.Text;
 
             Properties.Settings.Default.Save();
 

@@ -39,7 +39,14 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding FileName}" Width="200"/>
+                                <TextBlock Text="{Binding FileName}" Width="200">
+                                    <TextBlock.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Ouvrir" Click="MenuItem_Open_Click"/>
+                                            <MenuItem Header="Supprimer" Click="MenuItem_Delete_Click"/>
+                                        </ContextMenu>
+                                    </TextBlock.ContextMenu>
+                                </TextBlock>
                                 <TextBlock Text="{Binding DocumentType}" Width="150"/>
                             </StackPanel>
                         </DataTemplate>

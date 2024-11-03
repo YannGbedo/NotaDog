@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
+using System.Diagnostics;
 
 namespace NotaDog.Windows
 {
@@ -100,6 +101,18 @@ namespace NotaDog.Windows
             Properties.Settings.Default.WindowTop = Top;
             Properties.Settings.Default.WindowLeft = Left;
             Properties.Settings.Default.Save();
+        }
+
+        public static void OpenDocumentFile(string filePath)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Failed to open the document: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
