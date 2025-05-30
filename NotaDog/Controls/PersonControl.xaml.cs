@@ -25,6 +25,8 @@ namespace NotaDog.Controls
         public PersonControl()
         {
             InitializeComponent();
+
+            Person ??= new Person();
         }
 
         // Propriété de dépendance pour la liaison de données

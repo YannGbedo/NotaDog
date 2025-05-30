@@ -57,6 +57,8 @@ namespace NotaDog.Data
             // Immeuble
             public Immeuble Immeuble { get; set; }
 
+            public OwnershipOrigin OwnershipOrigin { get; set; }
+
             // Meubles vendus simultanément
             private bool _meublesVenduSimultanement;
             public bool MeublesVenduSimultanement
@@ -89,7 +91,7 @@ namespace NotaDog.Data
             public ObservableCollection<DesignationEstimation> DesignationsEstimations { get; set; }
 
             // Duree Promesse
-            public DateTime DateButoireDemandeVente { get; set; }
+            public DateOnly DateButoireDemandeVente { get; set; }
 
             // Faculté de substitution
             public bool FaculteSubstitution { get; set; }
@@ -110,20 +112,20 @@ namespace NotaDog.Data
             }
 
             // Champs pour entrée différée
-            public DateTime? DateButoireJouissance { get; set; } // Nullable car dépend de EntreeJouissanceImmediate
-            public double? Astreinte { get; set; }
-            public double? DepositaireSequestre { get; set; }
+            public DateOnly? DateButoireJouissance { get; set; } // Nullable car dépend de EntreeJouissanceImmediate
+            public double Astreinte { get; set; }
+            public double DepositaireSequestre { get; set; }
             public string? ReceveurDepot { get; set; }
 
             // Prix principal
             public double PrixPrincipal { get; set; }
 
             // Si Immeuble bâti est true
-            public double? PrixTerrainNu { get; set; }
-            public double? PrixConstructions { get; set; }
+            public double PrixTerrainNu { get; set; }
+            public double PrixConstructions { get; set; }
 
             // Exemption de taxe au régime
-            public ExemptionRegime? ExemptionRegime { get; set; } // Nullable si pas d'exemption
+            public ExemptionRegime ExemptionRegime { get; set; } // Nullable si pas d'exemption
 
             // Servitude connue
             private bool _servitudeConnue;
@@ -162,14 +164,14 @@ namespace NotaDog.Data
             }
 
             // Champs si obtention de prêt est true
-            public double? MontantTotalPret { get; set; }
+            public double MontantTotalPret { get; set; }
             public double? DureePret { get; set; }
             public double? TauxPret { get; set; }
-            public DateTime? DateButoirePret { get; set; }
+            public DateOnly? DateButoirePret { get; set; }
 
             // Démarches pour le certificat d'appartenance
-            private bool? _promettantFaitDemarcheCertificat;
-            public bool? PromettantFaitDemarcheCertificat
+            private bool _promettantFaitDemarcheCertificat;
+            public bool PromettantFaitDemarcheCertificat
             {
                 get => _promettantFaitDemarcheCertificat;
                 set
@@ -183,10 +185,21 @@ namespace NotaDog.Data
             }
 
             // Si le Promettant fait les démarches lui-même
-            public DateTime? DateButoireCertificat { get; set; }
+            public DateOnly? DateButoireCertificat { get; set; }
 
             // Si le Notaire fait les démarches
-            public int? NombreDocumentsCertificat { get; set; }
+            private int? _nombreDocumentsCertificat;
+            public int? NombreDocumentsCertificat {
+                get => _nombreDocumentsCertificat;
+                set
+                {
+                    if (_nombreDocumentsCertificat != value)
+                    {
+                        _nombreDocumentsCertificat = value;
+                        OnPropertyChanged(nameof(NombreDocumentsCertificat));
+                    }
+                }
+            }
             public ObservableCollection<string> PiecesCertificat { get; set; }
 
             // Versement d'une indemnité
@@ -205,8 +218,8 @@ namespace NotaDog.Data
             }
 
             // Champs si VersementIndemnite est true
-            private bool? _versementSequestre;
-            public bool? VersementSequestre
+            private bool _versementSequestre;
+            public bool VersementSequestre
             {
                 get => _versementSequestre;
                 set
@@ -220,26 +233,65 @@ namespace NotaDog.Data
             }
             public int? NumeroCheque { get; set; }
             public string? Banque { get; set; }
-            public double? Somme { get; set; }
+            public double Somme { get; set; }
 
             // Si VersementSequestre est true
             public string? NomSequestre { get; set; }
-            public bool? PresenceSequestre { get; set; }
+            private bool _NotaireSequestre;
+            public bool NotaireSequestre
+            {
+                get => _NotaireSequestre;
+                set
+                {
+                    if (_NotaireSequestre != value)
+                    {
+                        _NotaireSequestre = value;
+                        OnPropertyChanged(nameof(NotaireSequestre));
+                    }
+                }
+            }
+            public bool PresenceSequestre { get; set; }
 
             // Somme clause pénale
             public double SommeClausePenale { get; set; }
 
             // Informations supplémentaires si l'immeuble est bâti
-            public bool? PermisConstruireObtenu { get; set; }
-            public bool? ConstruitParPromettant { get; set; }
+            private bool _PermisConstruireObtenu; 
+            public bool PermisConstruireObtenu
+            {
+                get => _PermisConstruireObtenu;
+                set
+                {
+                    if (_PermisConstruireObtenu != value)
+                    {
+                        _PermisConstruireObtenu = value;
+                        OnPropertyChanged(nameof(PermisConstruireObtenu));
+                    }
+                }
+            }
+            public int BatimentType { get; set; }
+            private bool _ConstruitParPromettant;
+            public bool ConstruitParPromettant
+            {
+                get => _ConstruitParPromettant;
+                set
+                {
+                    if (_ConstruitParPromettant != value)
+                    {
+                        _ConstruitParPromettant = value;
+                        OnPropertyChanged(nameof(ConstruitParPromettant));
+                    }
+                }
+            }
+            public bool PermisConstruireExist {  get; set; }
             public string? DelivreurPermis { get; set; }
-            public DateTime? DateDelivrancePermis { get; set; }
+            public DateOnly? DateDelivrancePermis { get; set; }
             public string? LieuOuvertureChantier { get; set; }
-            public DateTime? DateOuvertureChantier { get; set; }
+            public DateOnly? DateOuvertureChantier { get; set; }
             public string? LieuDeclarationAchevement { get; set; }
-            public DateTime? DateDeclarationAchevement { get; set; }
+            public DateOnly? DateDeclarationAchevement { get; set; }
             public string? DelivreurCertificatConformite { get; set; }
-            public DateTime? DateDelivranceCertificatHabilite { get; set; }
+            public DateOnly? DateDelivranceCertificatHabilite { get; set; }
 
             // Promettant a souscrit à une assurance
             private bool? _promettantSouscritAssurance;
@@ -278,13 +330,14 @@ namespace NotaDog.Data
             // Si PromettantSouscritAssurance est true
             public string? AssuranceTousRisques { get; set; }
             public int? NumeroPoliceAssuranceTousRisques { get; set; }
-            public DateTime? DateAssuranceTousRisques { get; set; }
+            public DateOnly? DateAssuranceTousRisques { get; set; }
             public string? AssuranceDommage { get; set; }
             public int? NumeroPoliceAssuranceDommage { get; set; }
-            public DateTime? DateAssuranceDommage { get; set; }
+            public DateOnly? DateAssuranceDommage { get; set; }
+            public bool AssuranceResponsabiliteDecenaleObtenu { get; set; }
             public string? AssuranceResponsabiliteCivile { get; set; }
             public int? NumeroPoliceAssuranceResponsabiliteCivile { get; set; }
-            public DateTime? DateAssuranceResponsabiliteCivile { get; set; }
+            public DateOnly? DateAssuranceResponsabiliteCivile { get; set; }
 
             // Renvois et mentions légales
             public int Renvois { get; set; }
@@ -298,33 +351,35 @@ namespace NotaDog.Data
             {
                 // Initialiser les propriétés avec des valeurs par défaut
                 PresenceTemoins = false;
-                NombreTemoins = 0;
-                Temoins = new ObservableCollection<Person>();
+                NombreTemoins = 2;
+                Temoins = [];
 
                 Promettant = new Person();
                 Beneficiaire = new Person();
 
                 Immeuble = new Immeuble();
 
+                OwnershipOrigin = new OwnershipOrigin();
+
                 MeublesVenduSimultanement = false;
                 NombreMeubles = 0;
-                DesignationsEstimations = new ObservableCollection<DesignationEstimation>();
+                DesignationsEstimations = [];
 
-                DateButoireDemandeVente = DateTime.Now;
+                DateButoireDemandeVente = DateOnly.FromDateTime(DateTime.Now);
 
                 FaculteSubstitution = false;
                 EntreeJouissanceImmediate = true;
 
                 DateButoireJouissance = null;
-                Astreinte = null;
-                DepositaireSequestre = null;
+                Astreinte = 0;
+                DepositaireSequestre = 0;
                 ReceveurDepot = null;
 
                 PrixPrincipal = 0.0;
-                PrixTerrainNu = null;
-                PrixConstructions = null;
+                PrixTerrainNu = 0.0;
+                PrixConstructions = 0.0;
 
-                ExemptionRegime = null;
+                ExemptionRegime = ExemptionRegime.NoExemption;
 
                 ServitudeConnue = false;
                 ServitudeDe = null;
@@ -334,7 +389,7 @@ namespace NotaDog.Data
 
                 ObtentionPretNecessaire = false;
 
-                MontantTotalPret = null;
+                MontantTotalPret = 0.0;
                 DureePret = null;
                 TauxPret = null;
                 DateButoirePret = null;
@@ -342,34 +397,36 @@ namespace NotaDog.Data
                 PromettantFaitDemarcheCertificat = false;
                 DateButoireCertificat = null;
                 NombreDocumentsCertificat = 0;
-                PiecesCertificat = new ObservableCollection<string>();
+                PiecesCertificat = [];
 
                 VersementIndemnite = false;
                 VersementSequestre = false;
                 NumeroCheque = null;
                 Banque = null;
-                Somme = null;
+                Somme = 0.0;
 
                 NomSequestre = null;
+                NotaireSequestre = true;
                 PresenceSequestre = false;
 
                 SommeClausePenale = 0.0;
 
                 PermisConstruireObtenu = false;
                 ConstruitParPromettant = false;
+                PermisConstruireExist = false;
                 DelivreurPermis = null;
-                DateDelivrancePermis = null;
+                DateDelivrancePermis = DateOnly.FromDateTime(DateTime.Now);
                 LieuOuvertureChantier = null;
-                DateOuvertureChantier = null;
+                DateOuvertureChantier = DateOnly.FromDateTime(DateTime.Now);
                 LieuDeclarationAchevement = null;
-                DateDeclarationAchevement = null;
+                DateDeclarationAchevement = DateOnly.FromDateTime(DateTime.Now);
                 DelivreurCertificatConformite = null;
-                DateDelivranceCertificatHabilite = null;
+                DateDelivranceCertificatHabilite = DateOnly.FromDateTime(DateTime.Now);
                 PromettantSouscritAssurance = false;
                 AssurancesEntreprisesObtenu = false;
                 ExemptionAssuranceConstruction = false;
                 NombreAttestations = 0;
-                Attestations = new ObservableCollection<string>();
+                Attestations = [];
 
                 AssuranceTousRisques = null;
                 NumeroPoliceAssuranceTousRisques = null;
@@ -380,6 +437,7 @@ namespace NotaDog.Data
                 AssuranceResponsabiliteCivile = null;
                 NumeroPoliceAssuranceResponsabiliteCivile = null;
                 DateAssuranceResponsabiliteCivile = null;
+                AssuranceResponsabiliteDecenaleObtenu = false;
 
                 Renvois = 0;
                 MotsRayesNuls = 0;

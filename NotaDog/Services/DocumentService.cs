@@ -6,6 +6,20 @@ using NotaDog.Windows;
 using DocumentFormat.OpenXml;
 using Color = DocumentFormat.OpenXml.Wordprocessing.Color;
 using NotaDog.Interfaces;
+using System.ComponentModel;
+using System.Reflection;
+using System.Globalization;
+using DocumentFormat.OpenXml.Math;
+using ParagraphProperties = DocumentFormat.OpenXml.Wordprocessing.ParagraphProperties;
+using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using Justification = DocumentFormat.OpenXml.Wordprocessing.Justification;
+using JustificationValues = DocumentFormat.OpenXml.Wordprocessing.JustificationValues;
+using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
+using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
+using RunProperties = DocumentFormat.OpenXml.Wordprocessing.RunProperties;
+using Style = DocumentFormat.OpenXml.Wordprocessing.Style;
+using StyleValues = DocumentFormat.OpenXml.Wordprocessing.StyleValues;
+using System.Collections.ObjectModel;
 
 namespace NotaDog.Services
 {
@@ -26,11 +40,222 @@ namespace NotaDog.Services
     public class TableCellData(string text)
     {
         public string Text { get; set; } = text;
-        public RunProperties RunProperties { get; set; } = new RunProperties();
-        public ParagraphProperties ParagraphProperties { get; set; } = new ParagraphProperties();
+        public RunProperties RunProperties { get; set; } = new RunProperties(
+                new RunFonts { Ascii = "Tahoma", HighAnsi = "Tahoma", ComplexScript = "Tahoma" },
+                new FontSize { Val = "18" } // Taille 9 points * 2
+            );
+        public ParagraphProperties ParagraphProperties { get; set; } = new ParagraphProperties(
+                        new Justification { Val = JustificationValues.Both }
+                    );
         public TableCellProperties CellProperties { get; set; } = new TableCellProperties();
         public int RowSpan { get; set; } = 1; // Nombre de lignes à fusionner verticalement
         public int ColSpan { get; set; } = 1; // Nombre de colonnes à fusionner horizontalement
+    }
+
+    public enum BulletType
+    {
+        Dash,      // Tiret '-'
+        Circle,    // Cercle '●'
+        Square,    // Carré '■'
+        Custom     // Permet d'utiliser un symbole personnalisé
+    }
+
+    public class ListPoints
+    {
+        public string Text { get; set; }
+        public int Level { get; set; } // Niveau de la liste (0 pour le niveau principal, 1 pour les sous-listes)
+
+        public ListPoints(string text, int level)
+        {
+            Text = text;
+            Level = level;
+        }
+
+        public static List<ListPoints> GetListFromStrings(ObservableCollection<string> items, int level)
+        {
+            List<ListPoints> listPoints = [];
+
+            foreach (string item in items)
+            {
+                ListPoints point = new(item, level);
+                listPoints.Add(point);
+            }
+
+            return listPoints;
+        }
+
+        public static List<ListPoints> GetListFromStrings(string[] items, int level)
+        {
+            List<ListPoints> listPoints = [];
+
+            foreach (string item in items)
+            {
+                ListPoints point = new(item, level);
+                listPoints.Add(point);
+            }
+
+            return listPoints;
+        }
+
+        public static List<ListPoints> GetDumbListFromStrings(ObservableCollection<string> items, int level)
+        {
+            List<ListPoints> listPoints = [];
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                string item = string.Empty;
+                if (i != items.Count - 1)
+                {
+                    item = items[i] + " ;";
+                }
+                else
+                {
+                    item = items[i] + ".";
+                }
+
+                ListPoints point = new(item, level);
+                listPoints.Add(point);
+            }
+
+            return listPoints;
+        }
+    }
+
+    public static class NumberToFrenchWordsConverter
+    {
+        private static readonly string[] Units = { "zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix",
+        "onze", "douze", "treize", "quatorze", "quinze", "seize",
+        "dix-sept", "dix-huit", "dix-neuf" };
+
+        private static readonly string[] Tens = { "", "dix", "vingt", "trente", "quarante", "cinquante", "soixante",
+        "soixante", "quatre-vingt", "quatre-vingt" };
+
+        public static string ConvertToFrenchWords(double number)
+        {
+            // Convertir le nombre en chaîne avec deux décimales
+            var numberString = Math.Abs(number).ToString("F2", CultureInfo.InvariantCulture);
+            var parts = numberString.Split('.');
+            long integerPart = long.Parse(parts[0]);
+            string decimalPart = parts.Length > 1 ? parts[1] : "";
+
+            string result = "";
+
+            if (number < 0)
+                result += "moins ";
+
+            // Convertir la partie entière
+            result += ConvertIntegerToWords(integerPart);
+
+            // Convertir la partie décimale si elle existe
+            if (!string.IsNullOrEmpty(decimalPart))
+            {
+                result += " virgule " + ConvertDecimalPartToWords(decimalPart);
+            }
+
+            return result.Trim();
+        }
+
+        private static string ConvertIntegerToWords(long number)
+        {
+            if (number == 0)
+                return "zéro";
+
+            string words = "";
+
+            if ((number / 1000000000) > 0)
+            {
+                words += ConvertIntegerToWords(number / 1000000000) + " milliard";
+                if ((number / 1000000000) > 1)
+                    words += "s";
+                words += " ";
+                number %= 1000000000;
+            }
+
+            if ((number / 1000000) > 0)
+            {
+                words += ConvertIntegerToWords(number / 1000000) + " million";
+                if ((number / 1000000) > 1)
+                    words += "s";
+                words += " ";
+                number %= 1000000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                if ((number / 1000) == 1)
+                    words += "mille ";
+                else
+                    words += ConvertIntegerToWords(number / 1000) + " mille ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                if ((number / 100) == 1)
+                    words += "cent";
+                else
+                    words += Units[number / 100] + " cent";
+
+                if (number % 100 == 0 && (number / 100) > 1)
+                    words += "s";
+
+                words += " ";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (number <= 19)
+                {
+                    words += Units[number];
+                }
+                else
+                {
+                    int tens = (int)(number / 10);
+                    int units = (int)(number % 10);
+
+                    if (tens == 7 || tens == 9)
+                    {
+                        tens--;
+                        units += 10;
+                    }
+
+                    words += Tens[tens];
+
+                    if (units == 1 && tens != 8)
+                    {
+                        words += " et un";
+                    }
+                    else if (units > 0)
+                    {
+                        words += "-" + Units[units];
+                    }
+                    else if (tens == 8)
+                    {
+                        words += "s";
+                    }
+                }
+            }
+            else
+            {
+                // Supprimer le dernier espace inutile si number == 0
+                words = words.TrimEnd();
+            }
+
+            return words.Trim();
+        }
+
+        private static string ConvertDecimalPartToWords(string decimalPart)
+        {
+            var words = "";
+            foreach (char digit in decimalPart)
+            {
+                int digitValue = int.Parse(digit.ToString());
+                words += Units[digitValue] + " ";
+            }
+
+            return words.Trim();
+        }
     }
 
     public static class DocumentService
@@ -189,13 +414,10 @@ namespace NotaDog.Services
             // Intro Common Text
             AddCommonIntroduction(body, notaryInfo);
 
-            // Add a separator
-            body.AppendChild(new Paragraph(new Run(new Text(" "))));
-
             // Le contrôle du document construit sa partie du document
             if (documentControl is IDocumentBuilder documentBuilder)
             {
-                documentBuilder.BuildDocumentPart(body);
+                documentBuilder.BuildDocumentPart(mainPart);
             }
             else
             {
@@ -231,6 +453,14 @@ namespace NotaDog.Services
 
             // Ajouter le paragraphe au corps du document
             body.AppendChild(introParagraph);
+        }
+
+        public static void AddParagraphTexts(Body body, string[] strings, ParagraphType paragraphType)
+        {
+            foreach (string str in strings)
+            {
+                body.AppendChild(CreateParagraph(str, JustificationValues.Both, paragraphType));
+            }
         }
 
         public static Paragraph CreateParagraph(
@@ -391,13 +621,18 @@ namespace NotaDog.Services
             string text,
             int headingLevel,
             ParagraphType paragraphType,
-            TextStyle? textStyle = null)
+            TextStyle? textStyle = null,
+            JustificationValues? justification = null)
         {
+            if (justification == null)
+            {
+                justification = JustificationValues.Center;
+            };
             // Définir les propriétés du paragraphe en fonction du type
             ParagraphProperties paragraphProperties = new ParagraphProperties
             {
                 // Justification par défaut pour les titres (peut être ajustée)
-                Justification = new Justification { Val = JustificationValues.Center },
+                Justification = new Justification { Val = justification },
                 // Indentation en fonction du type de paragraphe
                 Indentation = new Indentation
                 {
@@ -442,6 +677,36 @@ namespace NotaDog.Services
 
             // Créer le paragraphe
             Paragraph paragraph = new Paragraph(paragraphProperties, run);
+
+            return paragraph;
+        }
+
+        public static Paragraph SParagraph()
+        {
+            // Créer un nouvel objet Paragraph
+            Paragraph paragraph = new Paragraph();
+
+            // Définir les propriétés du paragraphe
+            ParagraphProperties paragraphProperties = new ParagraphProperties();
+
+            // Créer un Run avec un espace non insécable
+            Run run = new Run();
+
+            // Définir les propriétés du Run pour la taille de police
+            RunProperties runProperties = new RunProperties();
+            // Taille de police en demi-points (5 points * 2)
+            FontSize fontSize = new FontSize() { Val = "10" };
+            runProperties.Append(fontSize);
+
+            // Ajouter les propriétés du Run
+            run.Append(runProperties);
+            // Ajouter un espace non insécable pour que le paragraphe ne soit pas supprimé
+            run.Append(new Text("\u00A0"));
+
+            // Ajouter les propriétés du paragraphe
+            paragraph.Append(paragraphProperties);
+            // Ajouter le Run au paragraphe
+            paragraph.Append(run);
 
             return paragraph;
         }
@@ -499,6 +764,189 @@ namespace NotaDog.Services
             props.Save();
         }
 
+        /*BULLET LIST METHODS----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        public static void CreateBulletList(MainDocumentPart mainPart, IEnumerable<ListPoints> items, ParagraphType paragraphType, string[]? specialBullets = null)
+        {
+            // Générer un NumId unique pour la liste
+            var numId = GenerateNewNumberingId();
+
+            // Ajouter les définitions de numérotation au document
+            Body body;
+            if (mainPart.Document.Body != null)
+            {
+                body = mainPart.Document.Body;
+
+                AddNumberingDefinitions(mainPart, numId, specialBullets);
+
+                // Créer les paragraphes pour chaque élément de la liste
+                foreach (var item in items)
+                {
+                    if (item.Text != string.Empty)
+                    {
+                        var paragraph = new Paragraph();
+
+                        // Créer les propriétés du paragraphe
+                        ParagraphProperties paragraphProperties = new ParagraphProperties
+                        {
+                            Justification = new Justification { Val = JustificationValues.Left },
+                            Indentation = new Indentation
+                            {
+                                Left = InchesToTwipsInt32(0.5 * item.Level).ToString(),
+                                Hanging = InchesToTwipsInt32(0.25).ToString()
+                            },
+                            SpacingBetweenLines = new SpacingBetweenLines
+                            {
+                                Before = "0",
+                                After = "0"
+                            }
+                        };
+
+                        // Définir les propriétés de numérotation
+                        var numberingProperties = new NumberingProperties(
+                            new NumberingLevelReference() { Val = item.Level },
+                            new NumberingId() { Val = numId }
+                        );
+
+                        paragraphProperties.Append(numberingProperties);
+                        paragraph.Append(paragraphProperties);
+
+                        // Ajouter le texte de l'élément
+                        var run = new Run();
+                        run.Append(new Text(item.Text));
+                        paragraph.Append(run);
+
+                        // Ajouter le paragraphe au corps du document
+                        body.Append(paragraph);
+                    }
+                }
+            }
+        }
+
+        private static int numberingCounter = 1;
+
+        private static int GenerateNewNumberingId()
+        {
+            return numberingCounter++;
+        }
+
+        private static void AddNumberingDefinitions(MainDocumentPart mainPart, int numId, string[]? specialBullets)
+        {
+            // Obtenir ou créer l'élément NumberingDefinitions
+            NumberingDefinitionsPart numberingPart;
+
+            if (mainPart.NumberingDefinitionsPart == null)
+            {
+                numberingPart = mainPart.AddNewPart<NumberingDefinitionsPart>();
+                numberingPart.Numbering = new Numbering();
+            }
+            else
+            {
+                numberingPart = mainPart.NumberingDefinitionsPart;
+            }
+
+            // Créer un abstractNumId unique
+            int abstractNumId = numId;
+
+            // Créer l'AbstractNum avec plusieurs niveaux
+            AbstractNum abstractNum = new AbstractNum() { AbstractNumberId = abstractNumId };
+
+            // Niveau 0 - Tiret
+            if (specialBullets != null)
+            {
+                Level level0 = new Level(
+                new StartNumberingValue() { Val = 1 },
+                new NumberingFormat() { Val = NumberFormatValues.Bullet },
+                new LevelText() { Val = specialBullets[0] },
+                //new LevelJustification() { Val = LevelJustificationValues.Left },
+                new ParagraphProperties(
+                    new Indentation() { Left = "0", Hanging = "360" },
+                    new Justification { Val = JustificationValues.Both }
+                    )
+                )
+                { LevelIndex = 0 };
+
+                abstractNum.Append(level0);
+
+                if (specialBullets.Length > 1)
+                {
+                    // Niveau 1 - Cercle
+                    Level level1 = new Level(
+                        new StartNumberingValue() { Val = 1 },
+                        new NumberingFormat() { Val = NumberFormatValues.Bullet },
+                        new LevelText() { Val = specialBullets[1] },
+                        //new LevelJustification() { Val = LevelJustificationValues.Left },
+                        new ParagraphProperties(
+                            new Indentation() { Left = "720", Hanging = "360" },
+                            new Justification { Val = JustificationValues.Both }
+                        )
+                    )
+                    { LevelIndex = 1 };
+
+                    abstractNum.Append(level1);
+                }
+            }
+            else
+            {
+                Level level0 = new Level(
+                new StartNumberingValue() { Val = 1 },
+                new NumberingFormat() { Val = NumberFormatValues.Bullet },
+                new LevelText() { Val = "-" },
+                //new LevelJustification() { Val = LevelJustificationValues.Left },
+                new ParagraphProperties(
+                    new Indentation() { Left = "◦", Hanging = "360" },
+                    new Justification { Val = JustificationValues.Both }
+                    )
+                )
+                { LevelIndex = 0 };
+
+                // Niveau 1 - Cercle
+                Level level1 = new Level(
+                    new StartNumberingValue() { Val = 1 },
+                    new NumberingFormat() { Val = NumberFormatValues.Bullet },
+                    new LevelText() { Val = "o" },
+                    //new LevelJustification() { Val = LevelJustificationValues.Left },
+                    new ParagraphProperties(
+                        new Indentation() { Left = "720", Hanging = "360" },
+                        new Justification { Val = JustificationValues.Both }
+                    )
+                )
+                { LevelIndex = 1 };
+
+                abstractNum.Append(level0);
+                abstractNum.Append(level1);
+            }
+            
+
+            
+
+            numberingPart.Numbering.Append(abstractNum);
+
+            // Créer le NumberingInstance
+            NumberingInstance numberingInstance = new NumberingInstance(
+                new AbstractNumId() { Val = abstractNumId }
+            )
+            { NumberID = numId };
+
+            numberingPart.Numbering.Append(numberingInstance);
+        }
+
+        private static string GetBulletCharacter(BulletType bulletType, string customBullet)
+        {
+            switch (bulletType)
+            {
+                case BulletType.Dash:
+                    return "-"; // Tiret
+                case BulletType.Circle:
+                    return "●"; // Cercle plein
+                case BulletType.Square:
+                    return "■"; // Carré
+                case BulletType.Custom:
+                    return customBullet ?? "-"; // Utiliser le symbole personnalisé ou un tiret par défaut
+                default:
+                    return "-"; // Par défaut, utiliser un tiret
+            }
+        }
+
         /*TABLE METHODS----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Table Creation
         public static void CreateTable(
@@ -512,7 +960,7 @@ namespace NotaDog.Services
 
             // Définir les propriétés de la table
             TableProperties tblProperties = new TableProperties(
-                new TableWidth { Width = "0", Type = TableWidthUnitValues.Auto },
+                new TableWidth { Width = (columnWidths.Sum()).ToString(), Type = TableWidthUnitValues.Dxa },
                 new TableBorders(
                     new TopBorder { Val = BorderValues.Single, Size = 4, Color = "000000" },
                     new BottomBorder { Val = BorderValues.Single, Size = 4, Color = "000000" },
@@ -533,10 +981,18 @@ namespace NotaDog.Services
             }
             table.AppendChild(tg);
 
+            // Set row height to auto
+            TableRowProperties defaultRowProperties = new TableRowProperties(
+                new TableRowHeight() { HeightType = HeightRuleValues.Auto }
+            );
+
             // Ajouter l'en-tête si présent
             if (headerCells != null && headerCells.Count > 0)
             {
                 TableRow headerRow = new TableRow();
+
+                
+                headerRow.Append(defaultRowProperties);
 
                 foreach (var cellData in headerCells)
                 {
@@ -551,6 +1007,8 @@ namespace NotaDog.Services
             foreach (var rowCells in rows)
             {
                 TableRow row = new TableRow();
+
+                row.Append(defaultRowProperties);
 
                 foreach (var cellData in rowCells)
                 {
@@ -724,6 +1182,22 @@ namespace NotaDog.Services
         }
 
         /*UTILITY METHODS----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        // Enum Helper
+        public static string GetEnumDescription(Enum value)
+        {
+            FieldInfo? field = value.GetType().GetField(value.ToString());
+            if (field != null)
+            {
+                DescriptionAttribute? attribute = field.GetCustomAttribute<DescriptionAttribute>();
+
+                return attribute == null ? value.ToString() : attribute.Description;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
         // Convert Inches into Int32
         public static Int32Value InchesToTwipsInt32(double inches)
         {
@@ -836,10 +1310,19 @@ namespace NotaDog.Services
             if (mainPart.WordprocessingCommentsPart == null)
             {
                 mainPart.AddNewPart<WordprocessingCommentsPart>();
-                mainPart.WordprocessingCommentsPart.Comments = new Comments();
             }
 
-            Comments comments = mainPart.WordprocessingCommentsPart.Comments;
+            Comments comments;
+            if (mainPart.WordprocessingCommentsPart != null)
+            {
+                mainPart.WordprocessingCommentsPart.Comments = new Comments();
+                comments = mainPart.WordprocessingCommentsPart.Comments;
+            }
+            else
+            {
+                comments = new Comments();
+            }
+            
 
             // Créer un identifiant unique pour le commentaire
             string commentId = "0"; // Vous devrez gérer l'incrémentation si vous avez plusieurs commentaires

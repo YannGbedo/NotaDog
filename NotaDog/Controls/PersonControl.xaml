@@ -5,18 +5,55 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NotaDog.Controls"
              xmlns:conv="clr-namespace:NotaDog.Converters"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:data="clr-namespace:NotaDog.Data"
              mc:Ignorable="d" 
              Height="Auto" Width="Auto">
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:MaritalStatusToVisibilityConverter x:Key="MaritalStatusVisibilityConverter" />
+        <!-- Convertisseur optionnel pour afficher des noms conviviaux -->
+        <conv:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+
+        <!-- Source de données pour Genre -->
+        <ObjectDataProvider x:Key="GenreValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="data:Genre" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!-- Source de données pour TypeID -->
+        <ObjectDataProvider x:Key="TypeIDValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="data:TypeID" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!-- Source de données pour IdOrigin -->
+        <ObjectDataProvider x:Key="IdOriginValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="data:IdOrigin" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!-- Source de données pour MaritalStatus -->
+        <ObjectDataProvider x:Key="MaritalStatusValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="data:MaritalStatus" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </UserControl.Resources>
-    <Grid>
+    <Grid DataContext="{Binding Person, RelativeSource={RelativeSource AncestorType=UserControl}}">
         <StackPanel Margin="5">
             <Label Content="Genre :" />
-            <ComboBox SelectedValue="{Binding Genre, Mode=TwoWay}" Width="200">
-                <ComboBoxItem Content="Masculin" Tag="Male" />
-                <ComboBoxItem Content="Féminin" Tag="Femelle" />
-                <ComboBoxItem Content="Autre" Tag="Autre" />
+            <ComboBox ItemsSource="{Binding Source={StaticResource GenreValues}}"
+                      SelectedItem="{Binding Genre, Mode=TwoWay}"
+                      Width="200">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
             <Label Content="Nom :" />
             <TextBox Text="{Binding Nom, Mode=TwoWay}" Width="200" />
@@ -33,28 +70,37 @@
             <Label Content="Date de naissance :" />
             <DatePicker SelectedDate="{Binding DateNaissance, Mode=TwoWay}" Width="200" />
             <Label Content="Type d'identification :" />
-            <ComboBox SelectedValue="{Binding TypeID, Mode=TwoWay}" Width="200">
-                <ComboBoxItem Content="Carte d'identité" Tag="CarteIdentite" />
-                <ComboBoxItem Content="Passeport" Tag="Passeport" />
-                <ComboBoxItem Content="Autre" Tag="Autre" />
+            <ComboBox ItemsSource="{Binding Source={StaticResource TypeIDValues}}"
+          SelectedItem="{Binding TypeID, Mode=TwoWay}"
+          Width="200">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
             <Label Content="Numéro d'identification :" />
             <TextBox Text="{Binding IDNumber, Mode=TwoWay}" Width="200" />
             <Label Content="Origine de l'identification :" />
-            <ComboBox SelectedValue="{Binding IdOrigin, Mode=TwoWay}" Width="200">
-                <ComboBoxItem Content="Exemple 1" Tag="Exemple1" />
-                <ComboBoxItem Content="Exemple 2" Tag="Exemple2" />
-            </ComboBox>
+            <TextBox Text="{Binding IdOrigin, Mode=TwoWay}" Width="200" />
             <Label Content="Validité de l'identification jusqu'au :" />
             <DatePicker SelectedDate="{Binding IdValidUntil, Mode=TwoWay}" Width="200" />
             <Label Content="Nationalité :" />
             <TextBox Text="{Binding Nationalite, Mode=TwoWay}" Width="200" />
             <Label Content="Statut marital :" />
-            <ComboBox SelectedValue="{Binding MaritalStatus, Mode=TwoWay}" Width="200">
-                <ComboBoxItem Content="Marié" Tag="Married" />
-                <ComboBoxItem Content="Célibataire" Tag="Celibate" />
-                <ComboBoxItem Content="Autre" Tag="Other" />
+            <ComboBox ItemsSource="{Binding Source={StaticResource MaritalStatusValues}}"
+                      SelectedItem="{Binding MaritalStatus, Mode=TwoWay}"
+                      Width="200">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
+            <Label Content="Certificat du Status obtenu :"
+                   Visibility="{Binding MaritalStatus, Converter={StaticResource MaritalStatusVisibilityConverter}}"/>
+            <DatePicker SelectedDate="{Binding MaritalStatusDate, Mode=TwoWay}" Width="200"
+                        Visibility="{Binding MaritalStatus, Converter={StaticResource MaritalStatusVisibilityConverter}}"/>
         </StackPanel>
     </Grid>
 </UserControl>
